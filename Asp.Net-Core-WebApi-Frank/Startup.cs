@@ -12,6 +12,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 using Asp.Net_Core_WebApi_Frank.Models;
+using Asp.Net_Core_WebApi_Frank.Models.Repository;
+using Asp.Net_Core_WebApi_Frank.Models.DataManager;
 using Microsoft.EntityFrameworkCore;
 
 namespace Asp.Net_Core_WebApi_Frank
@@ -40,7 +42,13 @@ namespace Asp.Net_Core_WebApi_Frank
             services.AddDbContext<DatabaseContext>(opt =>
                 opt.UseSqlServer(Configuration.GetConnectionString("Asp.Net.Core.WebApi_1")));
 
+            services.AddScoped<IDataRepository<Category>, CategoryDataManager>();
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            // LTPE Added below
+            // Koden herunder muligør, at man kan få sendt cirkular refereret data over Json.
+            services.AddMvc().AddJsonOptions(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

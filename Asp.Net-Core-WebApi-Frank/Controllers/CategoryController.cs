@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Asp.Net_Core_WebApi_Frank.Models;
+using Asp.Net_Core_WebApi_Frank.Models.Repository;
+using Asp.Net_Core_WebApi_Frank.Models.DataManager;
 using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -15,29 +17,38 @@ namespace Asp.Net_Core_WebApi_Frank.Controllers
     public class CategoryController : ControllerBase
     {
         private readonly DatabaseContext _context;
+        private readonly IDataRepository<Category> _dataRepository;
 
-        public CategoryController(DatabaseContext context)
+        //public CategoryController(DatabaseContext context)
+        //{
+        //    this._context = context;
+
+        //    if (0 == this._context.Categories.Count())
+        //    {
+        //        this._context.Categories.Add(new Category { CategoryName = "First Category" });
+        //        this._context.SaveChanges();
+        //    }
+
+        //}
+
+        public CategoryController(IDataRepository<Category> dataRepository)
         {
-            this._context = context;
-
-            if (0 == this._context.Categories.Count())
-            {
-                this._context.Categories.Add(new Category { CategoryName = "First Category" });
-                this._context.SaveChanges();
-            }
-
+            this._dataRepository = dataRepository;
         }
 
         // GET: api/<controller>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Category>>> GetAsync()
         {
-            return await this._context.Categories.Include(x => x.Products).ToListAsync();
+            Task <IEnumerable<Category>> Categories = _dataRepository.GetAll();
+
+            return Ok(Categories);
+
+            //return await this._context.Categories.Include(x => x.Products).ToListAsync();
 
             //this._context.ChangeTracker.LazyLoadingEnabled = false;
             //var Category = this._context.Categories.ToList();
-
-            
+      
         }
 
         // GET api/<controller>/5
